@@ -1,0 +1,92 @@
+---
+import { parseReport, getPartOrder } from '../scripts/parse-report';
+
+interface Props {
+  currentSlug?: string;
+}
+
+const { currentSlug } = Astro.props;
+const sections = parseReport();
+const parts = getPartOrder();
+
+// Group sections by part
+const sectionsByPart = new Map<string, typeof sections>();
+for (const s of sections) {
+  if (!sectionsByPart.has(s.part)) sectionsByPart.set(s.part, []);
+  sectionsByPart.get(s.part)!.push(s);
+}
+
+// Determine which part is active
+const currentSection = sections.find(s => s.slug === currentSlug);
+const activePart = currentSection?.part || '';
+---
+
+<nav class="sidebar-nav space-y-1">
+  <a href="/" class={`sidebar-link font-semibold mb-2 ${!currentSlug ? 'active' : ''}`}>
+    <span class="flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      </svg>
+      Dashboard
+    </span>
+  </a>
+
+  <div class="pt-2">
+    {parts.map(p => {
+      const partSections = sectionsByPart.get(p.part) || [];
+      const isActive = p.part === activePart;
+      const partId = `part-${p.partNumber}`;
+      return (
+        <div class="mb-1" data-part-group>
+          <button
+            class="part-toggle"
+            data-part-id={partId}
+            aria-expanded={isActive ? 'true' : 'false'}
+          >
+            <span class="truncate text-left">
+              <span class="text-navy-400 text-xs mr-1">{p.part.replace('Part ', '')}</span>
+              {p.partTitle}
+            </span>
+            <svg class={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${isActive ? 'rotate-90' : ''}`} data-chevron fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class={`part-sections pl-2 overflow-hidden ${isActive ? '' : 'hidden'}`} data-part-sections={partId}>
+            {partSections.map(s => {
+              const isCurrentSection = s.slug === currentSlug;
+              const displayTitle = s.isAppendix ? s.title : `${s.id}. ${s.title}`;
+              return (
+                <a
+                  href={`/${s.slug}`}
+                  class={`sidebar-link truncate ${isCurrentSection ? 'active' : ''}`}
+                  title={displayTitle}
+                >
+                  {displayTitle}
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</nav>
+
+<script>
+  // Toggle part sections — scoped to parent container to avoid conflicts
+  // between desktop sidebar and mobile drawer (both contain a Sidebar instance)
+  document.querySelectorAll('[data-part-id]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const group = btn.closest('[data-part-group]');
+      if (!group) return;
+      const sections = group.querySelector('[data-part-sections]') as HTMLElement | null;
+      const chevron = btn.querySelector('[data-chevron]');
+      if (sections && chevron) {
+        const isHidden = sections.classList.contains('hidden');
+        sections.classList.toggle('hidden');
+        chevron.classList.toggle('rotate-90', isHidden);
+        btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+      }
+    });
+  });
+</script>

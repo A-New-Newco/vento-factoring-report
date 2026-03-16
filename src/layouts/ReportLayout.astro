@@ -1,0 +1,62 @@
+---
+import Sidebar from '../components/Sidebar.astro';
+import MobileNav from '../components/MobileNav.astro';
+import SearchDialog from '../components/SearchDialog.astro';
+import BackToTop from '../components/BackToTop.astro';
+import '../styles/global.css';
+import '../styles/prose.css';
+
+interface Props {
+  title: string;
+  currentSlug?: string;
+}
+
+const { title, currentSlug } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>{title} — Vento Italian Factoring Report</title>
+  <meta name="description" content="Comprehensive market intelligence on Italian factoring, invoice finance, and trade finance." />
+</head>
+<body class="min-h-screen">
+  <!-- Mobile navigation -->
+  <MobileNav currentSlug={currentSlug} />
+
+  <!-- Desktop sidebar -->
+  <aside class="sidebar hidden lg:block fixed top-0 left-0 bottom-0 w-72 bg-white border-r border-navy-100 overflow-y-auto z-40">
+    <div class="p-5">
+      <a href="/" class="block mb-6">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-navy-900 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-sm">V</span>
+          </div>
+          <div>
+            <div class="font-bold text-navy-900 text-sm leading-tight">Vento Report</div>
+            <div class="text-[10px] text-navy-400">Italian Factoring & Trade Finance</div>
+          </div>
+        </div>
+      </a>
+
+      <div class="mb-4">
+        <SearchDialog />
+      </div>
+
+      <Sidebar currentSlug={currentSlug} />
+    </div>
+  </aside>
+
+  <!-- Main content area -->
+  <main class="main-content lg:ml-72 xl:mr-60 min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 sm:px-8 py-8 lg:py-12 pt-20 lg:pt-12">
+      <slot />
+    </div>
+  </main>
+
+  <BackToTop />
+</body>
+</html>

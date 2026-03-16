@@ -1,0 +1,51 @@
+---
+interface Props {
+  headings: { depth: number; text: string; id: string }[];
+}
+
+const { headings } = Astro.props;
+const h3Headings = headings.filter(h => h.depth === 3);
+---
+
+{h3Headings.length > 0 && (
+  <aside class="toc-rail hidden xl:block fixed top-24 w-52 text-sm" style="right: max(1rem, calc((100vw - 1280px) / 2));">
+    <div class="border-l-2 border-navy-100 pl-4">
+      <div class="text-xs font-semibold text-navy-400 uppercase tracking-wider mb-3">On this page</div>
+      <nav class="space-y-1.5">
+        {h3Headings.map(h => (
+          <a
+            href={`#${h.id}`}
+            class="toc-link block text-navy-500 hover:text-navy-800 transition-colors truncate"
+            data-heading-id={h.id}
+          >
+            {h.text}
+          </a>
+        ))}
+      </nav>
+    </div>
+  </aside>
+)}
+
+<script>
+  // Scroll-spy: highlight current heading in TOC
+  const tocLinks = document.querySelectorAll('.toc-link');
+  if (tocLinks.length > 0) {
+    const headingIds = Array.from(tocLinks).map(l => (l as HTMLElement).dataset.headingId!);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            tocLinks.forEach(l => l.classList.remove('text-blue-700', 'font-medium'));
+            const active = document.querySelector(`.toc-link[data-heading-id="${entry.target.id}"]`);
+            active?.classList.add('text-blue-700', 'font-medium');
+          }
+        }
+      },
+      { rootMargin: '-80px 0px -60% 0px', threshold: 0 }
+    );
+    headingIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+  }
+</script>

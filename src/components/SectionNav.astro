@@ -1,0 +1,32 @@
+---
+interface Props {
+  prevSlug?: string;
+  prevTitle?: string;
+  nextSlug?: string;
+  nextTitle?: string;
+}
+
+const { prevSlug, prevTitle, nextSlug, nextTitle } = Astro.props;
+---
+
+<nav class="flex items-stretch gap-4 mt-12 pt-8 border-t border-navy-100" aria-label="Section navigation">
+  {prevSlug ? (
+    <a
+      href={`/${prevSlug}`}
+      class="flex-1 group rounded-lg border border-navy-200 p-4 hover:border-blue-300 hover:bg-blue-50/50 transition-colors"
+    >
+      <div class="text-xs text-navy-400 mb-1">&larr; Previous</div>
+      <div class="text-sm font-medium text-navy-700 group-hover:text-blue-700 transition-colors">{prevTitle}</div>
+    </a>
+  ) : <div class="flex-1" />}
+
+  {nextSlug ? (
+    <a
+      href={`/${nextSlug}`}
+      class="flex-1 group rounded-lg border border-navy-200 p-4 hover:border-blue-300 hover:bg-blue-50/50 transition-colors text-right"
+    >
+      <div class="text-xs text-navy-400 mb-1">Next &rarr;</div>
+      <div class="text-sm font-medium text-navy-700 group-hover:text-blue-700 transition-colors">{nextTitle}</div>
+    </a>
+  ) : <div class="flex-1" />}
+</nav>

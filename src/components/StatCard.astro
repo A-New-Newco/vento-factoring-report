@@ -1,0 +1,29 @@
+---
+interface Props {
+  value: string;
+  label: string;
+  detail?: string;
+  color: string;
+}
+
+const { value, label, detail, color } = Astro.props;
+
+const colorMap: Record<string, { bg: string; text: string; border: string }> = {
+  blue:    { bg: 'bg-blue-50',    text: 'text-blue-700',    border: 'border-blue-200' },
+  emerald: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
+  purple:  { bg: 'bg-purple-50',  text: 'text-purple-700',  border: 'border-purple-200' },
+  amber:   { bg: 'bg-amber-50',   text: 'text-amber-700',   border: 'border-amber-200' },
+  cyan:    { bg: 'bg-cyan-50',    text: 'text-cyan-700',    border: 'border-cyan-200' },
+  orange:  { bg: 'bg-orange-50',  text: 'text-orange-700',  border: 'border-orange-200' },
+  rose:    { bg: 'bg-rose-50',    text: 'text-rose-700',    border: 'border-rose-200' },
+  slate:   { bg: 'bg-slate-50',   text: 'text-slate-700',   border: 'border-slate-200' },
+};
+
+const c = colorMap[color] || colorMap.blue;
+---
+
+<div class={`rounded-xl border ${c.border} ${c.bg} p-5 transition-shadow hover:shadow-md`}>
+  <div class={`text-3xl font-extrabold ${c.text} tracking-tight`}>{value}</div>
+  <div class="mt-1 text-sm font-semibold text-navy-800">{label}</div>
+  {detail && <div class="mt-0.5 text-xs text-navy-500">{detail}</div>}
+</div>

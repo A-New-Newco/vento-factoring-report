@@ -46,7 +46,7 @@ export function parseReport(): Section[] {
 
   const reportPath = path.resolve(
     new URL('.', import.meta.url).pathname,
-    '../../../Vento_Italian_Factoring_Complete_Report.md'
+    '../../public/Vento_Italian_Factoring_Complete_Report.md'
   );
   const content = fs.readFileSync(reportPath, 'utf-8');
   const lines = content.split('\n');
